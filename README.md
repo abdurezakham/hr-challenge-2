@@ -46,7 +46,7 @@ bash   npm install
 Create a .env.local file in the project root:
 
 
-env   NEXT_PUBLIC_API_BASE_URL=https://eth-backend-h97m.onrender.com/api/v1/
+env   NEXT_PUBLIC_API_BASE_URL=""
 
 
 Run the dev server:
