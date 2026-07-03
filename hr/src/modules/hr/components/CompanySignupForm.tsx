@@ -44,6 +44,8 @@ export default function CompanySignupForm() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
+    } else {
+      setErrors({});
     }
 
     setSubmitting(true);
@@ -52,7 +54,8 @@ export default function CompanySignupForm() {
     try {
       await signupCompany(form);
       router.push("/auth/login"); // or "/companies" as per requirement
-    } catch {
+    } catch (err) {
+      console.log(err);
       setServerError("Company registration failed. Please try again.");
     } finally {
       setSubmitting(false);

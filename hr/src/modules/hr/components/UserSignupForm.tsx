@@ -10,6 +10,8 @@ import FormFileInput from "@/src/shared/components/forms/FormFileInput";
 import { signupUser } from "@/src/modules/hr/api/userApi";
 import { validateUserSignupForm } from "@/src/modules/hr/services/signupServices";
 import { UserSignupFormValues } from "@/src/modules/hr/types";
+import { useSignupUser } from "../hooks/useSignupUser";
+import { ApiError } from "@/src/shared/utils/ApiError";
 
 export default function UserSignupForm() {
   const router = useRouter();
@@ -30,6 +32,40 @@ export default function UserSignupForm() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  //   // using reactQuery
+  //   const { signup, isPending } = useSignupUser();
+
+  //   const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   const validationErrors = validateUserSignupForm(form);
+  //   if (Object.keys(validationErrors).length > 0) {
+  //     setErrors(validationErrors);
+  //     return;
+  //   }
+
+  //   // Clear previous errors before new attempt
+  //   setErrors({});
+  //   setServerError("");
+
+  //   try {
+  //     await signup(form);            // ← calls the mutation
+  //     router.push("/auth/login");    // success → redirect
+  //   } catch (err) {
+  //     if (err instanceof ApiError) {
+  //       // Per‑field errors from the API
+  //       if (Object.keys(err.fieldErrors).length > 0) {
+  //         setErrors(err.fieldErrors);
+  //       } else {
+  //         setServerError(err.message);
+  //       }
+  //     } else {
+  //       setServerError("An unexpected error occurred.");
+  //     }
+  //   }
+  //   // No finally block – React Query manages isPending automatically
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -45,7 +81,8 @@ export default function UserSignupForm() {
     try {
       await signupUser(form);
       router.push("/auth/login");
-    } catch {
+    } catch (err) {
+      console.log(err);
       setServerError("Registration failed. Please try again.");
     } finally {
       setSubmitting(false);

@@ -22,3 +22,26 @@ export type CompanySignupFormValues = {
   woreda: string;
   house_number: string;
 };
+
+export type ApiResponse<T = Record<string, unknown>> = {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string[]>; // optional, only present on error
+} & T; // merges the extra fields directly into the object
+
+export type SigninResponse = ApiResponse<{
+  user: {
+    user_id: string;
+    name: string;
+    email: string;
+  };
+}>;
+
+export type ProfileResponse = ApiResponse<{
+  user: {
+    user_id: string;
+    name: string;
+    email: string;
+    profile_image: string | null;
+  };
+}>;

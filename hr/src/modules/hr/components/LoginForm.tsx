@@ -9,6 +9,7 @@ import { validateSigninFields } from "@/src/modules/hr/services/signinService";
 import { signinUser } from "@/src/modules/hr/api/userApi";
 import { useRouter } from "next/navigation";
 import FormInput from "@/src/shared/components/forms/FormInput";
+import { ApiError } from "@/src/shared/utils/ApiError";
 
 const EMPTY_VALUES: SigninFormValues = {
   email: "",
@@ -40,10 +41,16 @@ export default function LoginForm() {
     setServerError("");
 
     try {
-      await signinUser(values);
-      router.push("/profile");
-    } catch {
-      setServerError("Failed to save item. Please try again.");
+      const data = await signinUser(values);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      router.push(`/profile/${data.user.user_id}`);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        // Use the exact message from the API
+        setServerError(err.message);
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
     } finally {
       setSubmitting(false);
     }
