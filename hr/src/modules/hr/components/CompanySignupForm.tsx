@@ -14,7 +14,13 @@ import { CompanySignupFormValues } from "@/src/modules/hr/types";
 
 export default function CompanySignupForm() {
   const router = useRouter();
+
+  // getting user id
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
   const [form, setForm] = useState<CompanySignupFormValues>({
+    user_id: user?.user_id || "",
     company_name: "",
     company_email: "",
     license_file: null,
@@ -26,6 +32,7 @@ export default function CompanySignupForm() {
     woreda: "",
     house_number: "",
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
   const [submitting, setSubmitting] = useState(false);

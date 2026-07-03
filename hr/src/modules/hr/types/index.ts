@@ -10,7 +10,15 @@ export type UserSignupFormValues = {
   profileImage: File | null;
 };
 
+export type user = {
+  user_id: string;
+  name: string;
+  email: string;
+  profile_image: string | null;
+};
+
 export type CompanySignupFormValues = {
+  user_id?: string;
   company_name: string;
   company_email: string;
   license_file: File | null;

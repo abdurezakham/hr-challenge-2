@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Building2, CircleDot, User } from "lucide-react";
-import { tokens } from "@/src/shared/constants/landing";
-import Link from "next/link";
 import UserSignupForm from "@/src/modules/hr/components/UserSignupForm";
-import CompanySignupForm from "@/src/modules/hr/components/CompanySignupForm";
+import { tokens } from "@/src/shared/constants/landing";
+import { CircleDot } from "lucide-react";
+import Link from "next/link";
 
-type SignupType = "user" | "company";
+// type SignupType = "user" | "company";
 
 export default function SignupPage() {
-  const [signupType, setSignupType] = useState<SignupType>("user");
+  // const [signupType, setSignupType] = useState<SignupType>("user");
 
   return (
     <div
@@ -86,7 +84,7 @@ export default function SignupPage() {
           </div>
 
           {/* Slider */}
-          <div className="flex flex-col items-center mb-6">
+          {/* <div className="flex flex-col items-center mb-6">
             <div className="relative flex items-center w-full max-w-xs">
               <div
                 className="absolute inset-0 rounded-full"
@@ -126,10 +124,10 @@ export default function SignupPage() {
                 Company
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* Render active form */}
-          {signupType === "user" ? <UserSignupForm /> : <CompanySignupForm />}
+          <UserSignupForm />
         </div>
 
         <p className="mt-6 text-sm" style={{ color: tokens.inkSoft }}>

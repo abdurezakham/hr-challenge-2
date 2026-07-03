@@ -92,21 +92,22 @@ export async function signupCompany(
   });
 
   const data = await response.json();
+  console.log("Company signup response:", data);
 
-  // if (!response.ok || !data.success) {
-  //   const fieldErrors: Record<string, string> = {};
-  //   if (data.errors) {
-  //     for (const [field, messages] of Object.entries(data.errors)) {
-  //       fieldErrors[field] = Array.isArray(messages)
-  //         ? messages.join(" ")
-  //         : String(messages);
-  //     }
-  //   }
-  //   throw new ApiError(
-  //     data.message || "Company registration failed",
-  //     fieldErrors,
-  //   );
-  // }
+  if (!response.ok || !data.success) {
+    const fieldErrors: Record<string, string> = {};
+    if (data.errors) {
+      for (const [field, messages] of Object.entries(data.errors)) {
+        fieldErrors[field] = Array.isArray(messages)
+          ? messages.join(" ")
+          : String(messages);
+      }
+    }
+    throw new ApiError(
+      data.message || "Company registration failed",
+      fieldErrors,
+    );
+  }
 
   console.log("Company registered:", data);
   return data; // contains { success: true, message, ... } – use for navigation

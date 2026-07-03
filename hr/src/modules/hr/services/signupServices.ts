@@ -42,9 +42,9 @@ export function validateCompanySignupForm(values: CompanySignupFormValues) {
     errors.company_email = "Invalid company email address";
   }
 
-  //   if (!values.license_file) {
-  //     errors.license_file = "License file is required";
-  //   }
+  if (!values.license_file) {
+    errors.license_file = "License file is required";
+  }
 
   if (!values.tin_number.trim()) {
     errors.tin_number = "TIN number is required";
