@@ -9,6 +9,7 @@ const tokens = {
   ink: "#181B17",
   inkSoft: "#4B5049",
   line: "#D8D5C7",
+  error: "#C2574A",
 };
 
 export const departments = [
