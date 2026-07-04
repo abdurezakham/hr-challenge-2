@@ -43,7 +43,8 @@ export default function LoginForm() {
     try {
       const data = await signinUser(values);
       localStorage.setItem("user", JSON.stringify(data.user));
-      router.push(`/profile/${data.user.user_id}`);
+      // router.push(`/profile/${data.user.user_id}`);
+      router.push("/dashboard/companies");
     } catch (err) {
       if (err instanceof ApiError) {
         // Use the exact message from the API
