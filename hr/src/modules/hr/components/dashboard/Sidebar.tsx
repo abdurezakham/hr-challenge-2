@@ -1,4 +1,3 @@
-// src/components/dashboard/Sidebar.tsx
 import Link from "next/link";
 import { ChevronLeft, X, CircleDot, Building2, Users } from "lucide-react";
 import { tokens } from "@/src/shared/constants/landing";

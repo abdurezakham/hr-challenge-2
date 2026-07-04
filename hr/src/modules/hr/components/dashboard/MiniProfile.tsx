@@ -1,6 +1,6 @@
 // src/components/dashboard/MiniProfile.tsx
 import Image from "next/image";
-import { CircleDot } from "lucide-react";
+import { User } from "lucide-react";
 
 export type MiniProfileProps = {
   user: {
@@ -26,7 +26,7 @@ export default function MiniProfile({ user, collapsed }: MiniProfileProps) {
               className="object-cover"
             />
           ) : (
-            <CircleDot className="w-6 h-6 text-brass" />
+            <User className="w-6 h-6 text-brass" />
           )}
         </div>
 

@@ -11,6 +11,8 @@ import { tokens } from "@/src/shared/constants/landing";
 import { CompanyListItem } from "@/src/modules/hr/types";
 import Link from "next/link";
 import formatAddress from "../../../utils/formatAdress";
+import { useCompanyStore } from "../../../store/companyStore";
+import { useRouter } from "next/navigation";
 
 function getLicenseUrl(relativePath: string): string {
   const base = process.env.NEXT_PUBLIC_BASEURL ?? "";
@@ -23,9 +25,12 @@ type Props = {
 };
 
 export default function CompanyListCard({ company }: Props) {
-  const licenseUrl = company.license_file
-    ? getLicenseUrl(company.license_file)
-    : null;
+  let licenseUrl: string | null = null;
+  if (typeof company.license_file == "string") {
+    licenseUrl = company.license_file
+      ? getLicenseUrl(company.license_file)
+      : null;
+  }
 
   const handleLicenseClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -35,14 +40,23 @@ export default function CompanyListCard({ company }: Props) {
     }
   };
 
+  const setSelectedCompany = useCompanyStore((s) => s.setSelectedCompany);
+
+  const router = useRouter();
+  const handleClick = (company: CompanyListItem) => {
+    setSelectedCompany(company);
+    router.push(`/dashboard/companies/${company.company_id}`);
+  };
+
   return (
-    <Link
-      href={`/dashboard/companies/${company.company_id}`}
-      className="block rounded-md p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group"
+    <div
+      // href={`/dashboard/companies/${company.company_id}`}
+      className="block rounded-md p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group cursor-pointer"
       style={{
         backgroundColor: tokens.paper,
         border: `1px solid ${tokens.line}`,
       }}
+      onClick={() => handleClick(company)}
     >
       {/* Top row: name, email, license */}
       <div className="flex items-start justify-between gap-3">
@@ -136,7 +150,7 @@ export default function CompanyListCard({ company }: Props) {
           <ChevronRight className="w-3 h-3 inline ml-0.5" />
         </span>
       </div>
-    </Link>
+    </div>
   );
 }
 

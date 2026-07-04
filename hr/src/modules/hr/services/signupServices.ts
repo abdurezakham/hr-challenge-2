@@ -1,4 +1,8 @@
-import { CompanySignupFormValues, UserSignupFormValues } from "../types";
+import {
+  CompanySignupFormValues,
+  EmployeeFormValues,
+  UserSignupFormValues,
+} from "../types";
 
 export function validateUserSignupForm(values: UserSignupFormValues) {
   const errors: Partial<Record<keyof UserSignupFormValues, string>> = {};

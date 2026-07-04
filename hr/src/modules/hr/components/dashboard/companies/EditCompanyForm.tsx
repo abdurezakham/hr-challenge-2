@@ -1,39 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight, Building2, Loader2, Mail } from "lucide-react";
-import { tokens } from "@/src/shared/constants/landing";
-import { formTokens } from "@/src/shared/constants/formTokens";
-import FormInput from "@/src/shared/components/forms/FormInput";
-import FormFileInput from "@/src/shared/components/forms/FormFileInput";
-import AddressGroup from "@/src/shared/components/forms/AddressGroup";
-import { signupCompany } from "@/src/modules/hr/api/userApi";
-import { validateCompanySignupForm } from "@/src/modules/hr/services/signupServices";
+import { validateCompanySignupForm } from "@/src/modules/hr/services/signupServices"; // reuse client validation
 import { CompanySignupFormValues } from "@/src/modules/hr/types";
-import { useCurrentUser } from "@/src/shared/hooks/useCurrentUser";
+import AddressGroup from "@/src/shared/components/forms/AddressGroup";
+import FormFileInput from "@/src/shared/components/forms/FormFileInput";
+import FormInput from "@/src/shared/components/forms/FormInput";
+import { formTokens } from "@/src/shared/constants/formTokens";
+import { tokens } from "@/src/shared/constants/landing";
 import { useQueryClient } from "@tanstack/react-query";
+import { ArrowRight, Building2, Loader2, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useCompanyStore } from "../../../store/companyStore";
+import { useCurrentUser } from "@/src/shared/hooks/useCurrentUser";
+import { updateCompany } from "../../../api/companiesApi";
+import { ApiError } from "@/src/shared/utils/ApiError";
 
-export default function CreateCompany() {
+export default function EditCompanyForm() {
   const router = useRouter();
-  const currentUser = useCurrentUser();
   const queryClient = useQueryClient();
+  const selectedCompany = useCompanyStore((s) => s.selectedCompany);
+  const setSelectedCompany = useCompanyStore((s) => s.setSelectedCompany);
+
+  const currentUser = useCurrentUser();
 
   const [form, setForm] = useState<CompanySignupFormValues>({
-    user_id: currentUser?.user_id || "",
-    company_name: "",
-    company_email: "",
-    license_file: null,
-    tin_number: "",
-    phone_number: "",
-    region: "",
-    city: "",
-    subcity: "",
-    woreda: "",
-    house_number: "",
+    user_id: "",
+    company_name: selectedCompany?.company_name || "",
+    company_email: selectedCompany?.company_email || "",
+    license_file: null, // file input won't pre-fill; we'll keep the existing file
+    tin_number: selectedCompany?.tin_number || "",
+    phone_number: selectedCompany?.phone_number || "",
+    region: selectedCompany?.address?.region || "",
+    city: selectedCompany?.address?.city || "",
+    subcity: selectedCompany?.address?.subcity || "",
+    woreda: selectedCompany?.address?.woreda || "",
+    house_number: selectedCompany?.address?.house_number || "",
   });
 
-  // getting userId
   useEffect(() => {
     if (currentUser?.user_id) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -43,6 +47,7 @@ export default function CreateCompany() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (
@@ -50,31 +55,70 @@ export default function CreateCompany() {
     value: string | number | File | null,
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    // Clear field error on change
+    if (errors[field]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Client-side validation (same rules as signup)
     const validationErrors = validateCompanySignupForm(form);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
-    } else {
-      setErrors({});
     }
 
     setSubmitting(true);
     setServerError("");
+    setSuccessMessage("");
 
     try {
-      await signupCompany(form);
-      router.push("/auth/login"); // or "/companies" as per requirement
+      await updateCompany(
+        selectedCompany!.company_id,
+        currentUser!.user_id,
+        form,
+      );
+      // Update local store to reflect changes
+      if (selectedCompany) {
+        setSelectedCompany({
+          ...selectedCompany,
+          company_name: form.company_name,
+          company_email: form.company_email,
+          tin_number: form.tin_number,
+          phone_number: form.phone_number,
+          address: {
+            region: form.region,
+            city: form.city,
+            subcity: form.subcity,
+            woreda: form.woreda,
+            house_number: form.house_number,
+          },
+        });
+      }
+      // Invalidate companies list to keep it up-to-date
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
+      setSuccessMessage("Company updated successfully!");
+      // Optional: redirect after a moment
+      // router.push(`/dashboard/companies/${selectedCompany?.company_id}`);
     } catch (err) {
-      console.log(err);
-      setServerError("Company registration failed. Please try again.");
+      if (err instanceof ApiError) {
+        if (Object.keys(err.fieldErrors).length > 0) {
+          setErrors(err.fieldErrors);
+        } else {
+          setServerError(err.message);
+        }
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
     } finally {
       setSubmitting(false);
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
     }
   };
 
@@ -118,7 +162,7 @@ export default function CreateCompany() {
         file={form.license_file}
         onChange={(file) => handleChange("license_file", file)}
         error={errors.license_file}
-        required
+        required={false} // not mandatory for update unless you want to force re-upload
       />
       <FormInput
         id="tinNumber"
@@ -148,7 +192,6 @@ export default function CreateCompany() {
           houseNumber: form.house_number,
         }}
         onChange={(field, value) => {
-          // Map AddressGroup field names to CompanySignupFormValues keys
           const mapping: Record<string, keyof CompanySignupFormValues> = {
             region: "region",
             city: "city",
@@ -167,9 +210,8 @@ export default function CreateCompany() {
         }}
       />
 
-      {errors.server && <ErrorLine message={errors.server} />}
-
       {serverError && <ErrorLine message={serverError} />}
+      {successMessage && <SuccessLine message={successMessage} />}
 
       <button
         type="submit"
@@ -177,9 +219,9 @@ export default function CreateCompany() {
         className="w-full rounded-md px-6 py-3 font-body font-semibold text-white flex items-center justify-center gap-2 cta-primary"
         style={{ backgroundColor: tokens.navy }}
       >
-        {submitting ? "Registering company..." : "Register company"}
+        {submitting ? "Saving..." : "Update Company"}
         {submitting ? (
-          <Loader2 className="h-6 w-6 animate-spin" />
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
           <ArrowRight className="w-4 h-4" />
         )}
@@ -197,6 +239,21 @@ function ErrorLine({ message }: { message: string }) {
       <span
         className="inline-block w-1 h-1 rounded-full"
         style={{ backgroundColor: tokens.brassDeep }}
+      />
+      {message}
+    </p>
+  );
+}
+
+function SuccessLine({ message }: { message: string }) {
+  return (
+    <p
+      className="flex items-center gap-1.5 mt-1 text-xs font-mono"
+      style={{ color: tokens.sage }}
+    >
+      <span
+        className="inline-block w-1 h-1 rounded-full"
+        style={{ backgroundColor: tokens.sage }}
       />
       {message}
     </p>

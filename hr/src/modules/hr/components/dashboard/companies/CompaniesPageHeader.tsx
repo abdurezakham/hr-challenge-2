@@ -12,7 +12,7 @@ export default function CompaniesPageHeader() {
         Companies
       </h1>
       <Link
-        href="/dashboard/companies/new"
+        href="/dashboard/companies/add"
         className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 font-body font-semibold text-white transition-colors"
         style={{
           backgroundColor: tokens.navy,

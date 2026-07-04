@@ -44,7 +44,7 @@ export type CompanyListItem = {
     woreda: string;
     house_number: string;
   };
-  license_file: string;
+  license_file: string | File | undefined | null;
 };
 
 export type ApiResponse<T = Record<string, unknown>> = {
@@ -69,3 +69,28 @@ export type ProfileResponse = ApiResponse<{
     profile_image: string | null;
   };
 }>;
+
+export type EmployeeFormValues = {
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number?: string; // optional
+  department: string; // constrained to options
+  role: string;
+  status: string; // defaults to "active"
+  join_date: string; // YYYY-MM-DD
+  employee_number: string;
+};
+
+export type EmployeeListItem = {
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number?: string;
+  department: string;
+  role: string;
+  status: string;
+  join_date: string;
+};

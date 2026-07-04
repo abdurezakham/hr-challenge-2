@@ -1,7 +1,13 @@
 "use client";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SignupPage() {
+export default function DashboardRedirect() {
   const router = useRouter();
-  router.push("/dashboard/companies");
+
+  useEffect(() => {
+    router.push("/dashboard/companies");
+  }, [router]);
+
+  return null;
 }

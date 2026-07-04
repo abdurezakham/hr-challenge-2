@@ -2,6 +2,7 @@
 import CompaniesList from "@/src/modules/hr/components/dashboard/companies/CompaniesList";
 import CompaniesListEmptyState from "@/src/modules/hr/components/dashboard/companies/CompaniesListEmptyState";
 import CompaniesListError from "@/src/modules/hr/components/dashboard/companies/CompaniesListError";
+import CompanyListCardSkeleton from "@/src/modules/hr/components/dashboard/companies/CompaniesListLoading";
 import CompaniesListLoading from "@/src/modules/hr/components/dashboard/companies/CompaniesListLoading";
 import CompaniesPageHeader from "@/src/modules/hr/components/dashboard/companies/CompaniesPageHeader";
 import { useCompanies } from "@/src/modules/hr/hooks/useCompanies";
@@ -33,8 +34,22 @@ export default function CompanyPage() {
           border: `1px solid ${tokens.line}`,
         }}
       >
-        {/* Loading state – shown while user or companies are loading */}
-        {isLoading && <CompaniesListLoading />}
+        {/* Loading state */}
+        {/* {isLoading && <CompaniesListLoading />}
+        <div className="flex flex-col gap-4">
+          {isLoading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <CompanyListCardSkeleton key={i} />
+            ))}
+        </div> */}
+        {isLoading && (
+          <div className="flex flex-col gap-4">
+            <CompaniesListLoading />
+            <CompaniesListLoading />
+            <CompaniesListLoading />
+            <CompaniesListLoading />
+          </div>
+        )}
 
         {/* Error state */}
         {!isLoading && isError && (
