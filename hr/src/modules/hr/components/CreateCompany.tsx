@@ -12,7 +12,7 @@ import { signupCompany } from "@/src/modules/hr/api/userApi";
 import { validateCompanySignupForm } from "@/src/modules/hr/services/signupServices";
 import { CompanySignupFormValues } from "@/src/modules/hr/types";
 
-export default function CompanySignupForm() {
+export default function CreateCompany() {
   const router = useRouter();
 
   // getting user id

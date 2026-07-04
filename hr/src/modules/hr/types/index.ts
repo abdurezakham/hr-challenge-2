@@ -31,6 +31,22 @@ export type CompanySignupFormValues = {
   house_number: string;
 };
 
+export type CompanyListItem = {
+  company_id: string;
+  company_name: string;
+  company_email: string;
+  tin_number: string;
+  phone_number: string;
+  address: {
+    region: string;
+    city: string;
+    subcity: string;
+    woreda: string;
+    house_number: string;
+  };
+  license_file: string;
+};
+
 export type ApiResponse<T = Record<string, unknown>> = {
   success: boolean;
   message: string;
